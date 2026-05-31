@@ -202,13 +202,15 @@
   .carousel-track {
     display: flex;
     gap: 16px;
-    padding: 12px calc(50vw - 240px);
+    /* padding is set dynamically by JS after measuring slide width */
+    padding-top: 12px;
+    padding-bottom: 12px;
     will-change: transform;
   }
 
   .carousel-slide {
-    flex: 0 0 min(82vw, 300px);
-    height: 380px;
+    flex: 0 0 min(80vw, 480px);
+    height: clamp(320px, 55vw, 560px);
     border-radius: 6px;
     overflow: hidden;
     background: var(--warm);
@@ -518,21 +520,6 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
-
-  /* ── RESPONSIVE ─────────────────────────────────────────────*/
-  @media (max-width: 640px) {
-    .carousel-slide { flex: 0 0 300px; height: 380px; }
-    .carousel-track { padding: 12px calc(50vw - 150px); }
-    .letter-section { padding: 3rem 1.8rem; }
-    .letter-section::before {
-      font-size: 4.75rem;
-      top: 0.1rem;
-      left: 0.55rem;
-      opacity: 0.25;
-    }
-    .reveal-card { padding: 3rem 1.8rem; }
-    .reveal-details { gap: 1.2rem; }
-  }
 </style>
 </head>
 <body>
@@ -643,9 +630,9 @@
   <p class="section-label" style="text-align:center; margin-bottom:2.5rem;">From me, to you</p>
   <div class="letter-section">
     <p class="letter-text" id="letter-text">
-      I hate that I don't get to celebrate your birthday with you this year. I miss you every day, and trust, the countdown until I get to see you again has been running since the day I left (T-minus 10 weeks if I make it out for Labor Day). So, I had to get a little creative because you deserve to be celebrated and feel oh so special on your golden birthday.<br><br>
+      I wish I got to spend your birthday with you. Since I can't, I had to get a little creative. You deserve to be celebrated and feel oh so special on your golden birthday.<br><br>      
       You are truly such a light. I love laughing with you, teasing you, talking with you, sitting in silence with you, swapping music, texting throughout the day, sending you pictures, and asking you all of my random questions. You make each of my days feel special, and I can only hope I do the same for you. I love learning what makes you you, and I plan to learn much, much more as we grow together.<br><br>
-      So here's to twenty-four. Twenty-four on the twenty-fourth! I pray this year brings you so much joy and love. Celebrate yourself today. And when we're finally back together again, there are many cuddles, kisses, and dances waiting for us.<br><br>
+      So here's to twenty-four. Twenty-four on the twenty-fourth! I pray this year brings you so much joy and love. Celebrate yourself today. And when we're finally back together again, there are many cuddles, kisses, and dances waiting for us.
     </p>
     <p class="letter-sign">With all my love<br><br>TV ♡</p>
   </div>
@@ -663,8 +650,8 @@
   <h2 class="section-title">And now, the <em>fun</em> part.</h2>
 
   <p class="section-body" style="color:var(--mid);">
-    So I thought a lot about what to get you for 24. You told me you've never really gotten a birthday gift before, and it's your golden birthday, which only happens once. <br><br>
-    So I decided on a little adventure. An experience, if you will. <br><br>
+    So I thought a lot about what to get you for 24. It's your golden birthday, which only happens once, and I wanted to make it a little special.<br><br>
+    So I decided on an adventure. An experience, if you will. <br><br>
   </p>
 
   <div class="reveal-card">
@@ -743,11 +730,14 @@
 
   function measure() {
     const firstRealSlide = allSlides[1] || allSlides[0];
-    const trackStyle = getComputedStyle(track);
-
     slideWidth = firstRealSlide.getBoundingClientRect().width;
-    gap = parseFloat(trackStyle.gap || trackStyle.columnGap || '16') || 16;
+    gap = 16;
     step = slideWidth + gap;
+
+    // centre the active slide: left padding = half viewport minus half slide
+    const sidePad = Math.max(0, (window.innerWidth - slideWidth) / 2);
+    track.style.paddingLeft  = sidePad + 'px';
+    track.style.paddingRight = sidePad + 'px';
   }
 
   function moveTo(newPos, animate) {
