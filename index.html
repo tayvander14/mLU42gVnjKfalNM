@@ -738,6 +738,7 @@
     const sidePad = Math.max(0, (window.innerWidth - slideWidth) / 2);
     track.style.paddingLeft  = sidePad + 'px';
     track.style.paddingRight = sidePad + 'px';
+    track.getBoundingClientRect();
   }
 
   function moveTo(newPos, animate) {
@@ -769,10 +770,6 @@
     updateDots();
     updateActive();
   }
-
-  track.style.transition = 'none';
-  measure();
-  track.style.transform = 'translateX(-' + (pos * step) + 'px)';
 
   for (let i = 0; i < COUNT; i++) {
     const d = document.createElement('button');
@@ -852,9 +849,13 @@
   window.addEventListener('orientationchange', () => {
     setTimeout(refreshPosition, 150);
   });
-
-  updateActive();
-  startAuto();
+  
+  window.addEventListener('load', () => {
+    measure();
+    track.style.transform = 'translateX(-' + (pos * step) + 'px)';
+    updateActive();
+    startAuto();
+  });
 })();
 
 
