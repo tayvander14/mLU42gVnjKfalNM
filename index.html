@@ -214,9 +214,9 @@
     border-radius: 6px;
     overflow: hidden;
     background: var(--warm);
-    transition: opacity 0.4s, transform 0.4s;
-    opacity: 0.55;
-    transform: scale(0.94);
+    transition: transform 0.4s;
+    opacity: 1;
+    transform: scale(1);
   }
 
   .carousel-slide.active {
@@ -500,6 +500,344 @@
     display: none;
   }
 
+  /* ── SCROLL PROGRESS BAR ─────────────────────────────────────*/
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    z-index: 10000;
+    transition: width 0.1s linear;
+  }
+
+  /* side dot nav (hidden on small screens to avoid clutter) */
+  #side-nav {
+    position: fixed;
+    right: 1.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 9000;
+  }
+
+  .side-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold-light);
+    opacity: 0.3;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .side-dot.active {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+
+  @media (max-width: 640px) {
+    #side-nav { display: none; }
+  }
+
+  /* ── SOUND TOGGLE ─────────────────────────────────────────────*/
+  #sound-toggle {
+    position: fixed;
+    bottom: 1.6rem;
+    right: 1.6rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1px solid var(--gold-light);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 9500;
+    box-shadow: 0 2px 14px rgba(30,35,24,0.12);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  #sound-toggle:hover { background: var(--gold); color: var(--cream); }
+
+  /* ── ENVELOPE ─────────────────────────────────────────────────*/
+  .envelope-wrap {
+    max-width: 380px;
+    margin: 0 auto;
+    perspective: 1400px;
+  }
+
+  .envelope-wrap.hidden-env {
+    display: none;
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    padding-top: 64%;
+    cursor: pointer;
+    user-select: none;
+    filter: drop-shadow(0 16px 28px rgba(30,35,24,0.18));
+    transition: transform 0.25s ease;
+  }
+
+  .envelope:hover {
+    transform: translateY(-3px);
+  }
+
+  .envelope-body {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(165deg, #fbfaf6, var(--cream) 60%);
+    border: 1px solid #ddd9c9;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .envelope-flap {
+    position: absolute;
+    top: -1px; left: -1px;
+    width: calc(100% + 2px);
+    height: 56%;
+    background: linear-gradient(165deg, #fbfaf6, var(--warm) 85%);
+    clip-path: polygon(0 0, 100% 0, 50% 96%);
+    transform-origin: top center;
+    transform: rotateX(0deg);
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    z-index: 3;
+  }
+
+  .envelope-flap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(0 0, 100% 0, 50% 96%);
+    border: 1px solid #ddd9c9;
+    border-top: none;
+  }
+
+  .envelope.opened .envelope-flap {
+    transform: rotateX(180deg);
+  }
+
+  .envelope-seal {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    width: 38px;
+    height: 38px;
+    margin-left: -19px;
+    margin-top: -19px;
+    background: radial-gradient(circle at 35% 30%, #6e8146, var(--gold) 65%, #44521f 100%);
+    color: var(--cream);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    z-index: 4;
+    box-shadow: 0 3px 8px rgba(30,35,24,0.35), inset 0 1px 1px rgba(255,255,255,0.25);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .envelope.opened .envelope-seal {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  .envelope-label {
+    text-align: center;
+    margin-top: 1.6rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--soft);
+    transition: opacity 0.3s ease;
+  }
+
+  .envelope-wrap.is-open .envelope-label {
+    opacity: 0;
+  }
+
+  /* the full letter card stays hidden until the envelope is opened */
+  .letter-section {
+    display: none;
+  }
+
+  .letter-section.shown {
+    display: block;
+  }
+
+  .letter-close {
+    display: block;
+    margin: 1.6rem auto 0;
+    background: none;
+    border: 1px solid var(--gold-light);
+    color: var(--gold);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.4rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .letter-close:hover { background: var(--gold); color: var(--cream); }
+
+  /* ── MEMORIES COUNTER ─────────────────────────────────────────*/
+  .counter-section {
+    text-align: center;
+  }
+
+  .counter-card {
+    margin-top: 2.5rem;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    background: var(--warm);
+    border-radius: 8px;
+    padding: 2.2rem 3rem;
+  }
+
+  .counter-number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 8vw, 4.2rem);
+    color: var(--gold);
+    font-weight: 500;
+    line-height: 1;
+    min-width: 4ch;
+    text-align: right;
+  }
+
+  .counter-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+
+  .counter-since {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--soft);
+  }
+
+  /* ── 24 THINGS GRID ──────────────────────────────────────────*/
+  .things-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem 2rem;
+    margin-top: 3rem;
+    text-align: left;
+  }
+
+  @media (max-width: 640px) {
+    .things-grid { grid-template-columns: 1fr; }
+  }
+
+  .thing-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .thing-num {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.3rem;
+    line-height: 1.4;
+    flex: 0 0 auto;
+    min-width: 1.6rem;
+  }
+
+  .thing-text {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--mid);
+  }
+
+  .thing-text strong {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* ── MUSIC PLAYER ─────────────────────────────────────────────*/
+  #music-pill {
+    position: fixed;
+    bottom: 1.6rem;
+    left: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--cream);
+    border: 1px solid var(--gold-light);
+    border-radius: 30px;
+    padding: 0.5rem 1.1rem 0.5rem 0.5rem;
+    z-index: 9500;
+    box-shadow: 0 2px 14px rgba(30,35,24,0.12);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  #music-pill:hover { background: var(--warm); }
+
+  #music-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex: 0 0 auto;
+  }
+
+  #music-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--soft);
+    white-space: nowrap;
+  }
+
+  #music-bars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 12px;
+  }
+
+  #music-bars span {
+    width: 2px;
+    background: var(--gold);
+    border-radius: 1px;
+    animation: barBounce 0.9s ease-in-out infinite;
+  }
+
+  #music-bars span:nth-child(1) { animation-delay: 0s; }
+  #music-bars span:nth-child(2) { animation-delay: 0.2s; }
+  #music-bars span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes barBounce {
+    0%, 100% { height: 4px; }
+    50% { height: 12px; }
+  }
+
+  #music-bars.paused span { animation-play-state: paused; height: 4px; }
+
   /* ── ANIMATIONS ─────────────────────────────────────────────*/
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
@@ -525,6 +863,30 @@
 <body>
 
 <canvas id="confetti-canvas"></canvas>
+
+<div id="progress-bar"></div>
+
+<nav id="side-nav">
+  <button class="side-dot" data-target=".hero" aria-label="Hero"></button>
+  <button class="side-dot" data-target=".photo-section" aria-label="Photos"></button>
+  <button class="side-dot" data-target="#letter-section-wrap" aria-label="Letter"></button>
+  <button class="side-dot" data-target="#things-section-wrap" aria-label="24 Things"></button>
+  <button class="side-dot" data-target=".reveal-section" aria-label="Gift"></button>
+  <button class="side-dot" data-target=".closing" aria-label="Closing"></button>
+</nav>
+
+<button id="sound-toggle" aria-label="Toggle sound" style="display:none;">🔊</button>
+
+<div id="music-pill" role="button" aria-label="Toggle our song">
+  <div id="music-icon">♪</div>
+  <div id="music-bars" class="paused"><span></span><span></span><span></span></div>
+  <div id="music-label">Our Song</div>
+</div>
+
+<!-- Replace the src below with a link to your song's audio file -->
+<audio id="bg-music" loop preload="none">
+  <source src="music/our-song.mp3" type="audio/mpeg">
+</audio>
 
 <!-- ============================================================
      HERO
@@ -626,15 +988,65 @@
 <!-- ============================================================
      LETTER
      ============================================================ -->
-<section style="max-width:680px; padding: 0 2rem 5rem;">
+<section id="letter-section-wrap" style="max-width:680px; padding: 0 2rem 5rem;">
   <p class="section-label" style="text-align:center; margin-bottom:2.5rem;">From me, to you</p>
-  <div class="letter-section">
+
+  <div class="envelope-wrap" id="envelope-wrap">
+    <div class="envelope" id="envelope">
+      <div class="envelope-body"></div>
+      <div class="envelope-flap"></div>
+      <div class="envelope-seal">♡</div>
+    </div>
+    <p class="envelope-label">tap to open</p>
+  </div>
+
+  <div class="letter-section" id="letter-card">
     <p class="letter-text" id="letter-text">
       I wish I got to spend your birthday with you. Since I can't, I had to get a little creative. You deserve to be celebrated and feel oh so special on your golden birthday.<br><br>      
       You are truly such a light. I love laughing with you, teasing you, talking with you, sitting in silence with you, swapping music, texting throughout the day, sending you pictures, and asking you all of my random questions. You make each of my days feel special, and I can only hope I do the same for you. I love learning what makes you you, and I plan to learn much, much more as we grow together.<br><br>
       So here's to twenty-four. Twenty-four on the twenty-fourth! I pray this year brings you so much joy and love. Celebrate yourself today. And when we're finally back together again, there are many cuddles, kisses, and dances waiting for us.
     </p>
     <p class="letter-sign">With all my love<br><br>TV ♡</p>
+    <button class="letter-close" id="letter-close">Seal it back up</button>
+  </div>
+</section>
+
+
+<div class="divider"></div>
+
+
+<!-- ============================================================
+     24 THINGS I LIKE ABOUT YOU
+     ============================================================ -->
+<section id="things-section-wrap">
+  <p class="section-label" style="text-align:center;">For your golden birthday</p>
+  <h2 class="section-title" style="text-align:center;">24 things I love <em>about you</em></h2>
+  <p class="section-body" style="text-align:center; margin:0 auto;">Twenty-four reasons, for your twenty-fourth.</p>
+  <div class="things-grid">
+    <div class="thing-item"><span class="thing-num">01</span><span class="thing-text">How you <strong>rub my hand</strong> when you hold it</span></div>
+    <div class="thing-item"><span class="thing-num">02</span><span class="thing-text">How <strong>safe</strong> and comfortable I feel with you</span></div>
+    <div class="thing-item"><span class="thing-num">03</span><span class="thing-text">Your <strong>pet names</strong> that somehow always make me blush</span></div>
+    <div class="thing-item"><span class="thing-num">04</span><span class="thing-text">Your <strong>laugh</strong></span></div>
+    <div class="thing-item"><span class="thing-num">05</span><span class="thing-text">Your <strong>playful</strong> sense of humor</span></div>
+    <div class="thing-item"><span class="thing-num">06</span><span class="thing-text">Your love of <strong>dancing</strong> and having <strong>fun</strong></span></div>
+    <div class="thing-item"><span class="thing-num">07</span><span class="thing-text">How <strong>effortlessly handsome</strong> you are</span></div>
+    <div class="thing-item"><span class="thing-num">08</span><span class="thing-text">Your <strong>eyes</strong> that say so much without you ever speaking a word</span></div>
+    <div class="thing-item"><span class="thing-num">09</span><span class="thing-text">How <strong>attentive</strong> you are when I talk, even when I'm just yapping</span></div>
+    <div class="thing-item"><span class="thing-num">10</span><span class="thing-text">The way you <strong>remember</strong> the little things I tell you</span></div>
+    <div class="thing-item"><span class="thing-num">11</span><span class="thing-text">Your "<strong>yes</strong>" to every random ask I have</span></div>
+    <div class="thing-item"><span class="thing-num">12</span><span class="thing-text">How <strong>patient</strong> you are with me</span></div>
+    <div class="thing-item"><span class="thing-num">13</span><span class="thing-text">The way you <strong>explain</strong> things until they finally make sense</span></div>
+    <div class="thing-item"><span class="thing-num">14</span><span class="thing-text">Your <strong>devotion</strong> to your family and friends</span></div>
+    <div class="thing-item"><span class="thing-num">15</span><span class="thing-text">How <strong>supportive</strong> you are of my goals</span></div>
+    <div class="thing-item"><span class="thing-num">16</span><span class="thing-text">How <strong>transparent</strong> and <strong>honest</strong> you are</span></div>
+    <div class="thing-item"><span class="thing-num">17</span><span class="thing-text">The way you <strong>smile</strong> when I kiss you</span></div>
+    <div class="thing-item"><span class="thing-num">18</span><span class="thing-text">How <strong>hardworking</strong> you are</span></div>
+    <div class="thing-item"><span class="thing-num">19</span><span class="thing-text">The <strong>excitement</strong> you have sharing the things you're passionate about</span></div>
+    <div class="thing-item"><span class="thing-num">20</span><span class="thing-text">Your <strong>adventurous</strong> spirit</span></div>
+    <div class="thing-item"><span class="thing-num">21</span><span class="thing-text">The <strong>dreamer</strong> in you</span></div>
+    <div class="thing-item"><span class="thing-num">22</span><span class="thing-text">How <strong>intentional</strong> you are in everything you do</span></div>
+    <div class="thing-item"><span class="thing-num">23</span><span class="thing-text">How <strong>affectionate</strong> you are</span></div>
+    <div class="thing-item"><span class="thing-num">24</span><span class="thing-text">Your insane <strong>courage</strong></span></div>
   </div>
 </section>
 
@@ -651,7 +1063,7 @@
 
   <p class="section-body" style="color:var(--mid);">
     So I thought a lot about what to get you for 24. It's your golden birthday, which only happens once, and I wanted to make it a little special.<br><br>
-    So I decided on an adventure. An experience, if you will. <br><br>
+    You always say yes to adventure, so I figured your birthday should include a little of it too.<br><br>
   </p>
 
   <div class="reveal-card">
@@ -662,29 +1074,13 @@
 
     <h3 class="reveal-card-title">You're Going<br><em>Skydiving.</em></h3>
 
-    <div class="reveal-details">
-      <div class="reveal-detail">
-        <div class="reveal-detail-label">Where</div>
-        <div class="reveal-detail-value">Skydive California</div>
-      </div>
-      <div class="reveal-detail">
-        <div class="reveal-detail-label">When</div>
-        <div class="reveal-detail-value">Whenever you're ready</div>
-      </div>
-    </div>
-
     <p class="reveal-body">
-      I wanted to give you something I know you've wanted to do, but have been waiting to buy.<br><br>
+      I wanted to give you something I know you've been wanting to do for a while, but were waiting until you got to California to finally cross off your bucket list.<br><br>
 
-      Whether you want to go by yourself or with friends, that's entirely up to you. This voucher will always be here. Whenever you're ready, pick a date and go make a memory.<br><br>
+      I haven't booked anything yet because I want you to pick the drop zone (I have a few options in mind). Whether you go with friends, by yourself, or with me when I come visit 😉, that's entirely up to you.<br><br>
 
-      And if I can't be there with you, I fully expect videos, pictures, and a complete recap afterward.
+      Consider this the official announcement. The details (and the actual jump) are coming soon.
     </p>
-
-    <!-- GIFT CERTIFICATE LINK -->
-    <a href="PASTE-CERTIFICATE-LINK-HERE" class="reveal-cta" target="_blank" rel="noreferrer">
-      <span>Your Voucher</span>
-    </a>
 
   </div>
 </section>
@@ -695,7 +1091,7 @@
      ============================================================ -->
 <div class="closing">
   <!-- Edit the closing lines below -->
-<h2 class="closing-title">To you,<br>my love.</h2>
+<h2 class="closing-title">Until the next adventure,<br>my love.</h2>
   <p class="closing-sub">Happy 24th Birthday</p>
   <div class="hearts">♡ &nbsp; ♡ &nbsp; ♡</div>
 </div>
@@ -734,8 +1130,10 @@
     gap = 16;
     step = slideWidth + gap;
 
-    // centre the active slide: left padding = half viewport minus half slide
-    const sidePad = Math.max(0, (window.innerWidth - slideWidth) / 2);
+    // use documentElement.clientWidth (stable) rather than window.innerWidth,
+    // which on iOS Safari changes as the address bar shows/hides while scrolling
+    const viewportWidth = document.documentElement.clientWidth;
+    const sidePad = Math.max(0, (viewportWidth - slideWidth) / 2);
     track.style.paddingLeft  = sidePad + 'px';
     track.style.paddingRight = sidePad + 'px';
     track.getBoundingClientRect();
@@ -842,12 +1240,21 @@
   track.addEventListener('mouseenter', stopAuto);
   track.addEventListener('mouseleave', startAuto);
 
-  window.addEventListener('resize', () => {
-    refreshPosition();
-  });
+  let lastWidth = window.innerWidth;
+  let resizeTimer = null;
+
+  function handleResize() {
+    const w = document.documentElement.clientWidth;
+    if (w === lastWidth) return; // ignore height-only changes (iOS address bar)
+    lastWidth = w;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(refreshPosition, 120);
+  }
+
+  window.addEventListener('resize', handleResize);
 
   window.addEventListener('orientationchange', () => {
-    setTimeout(refreshPosition, 150);
+    setTimeout(() => { lastWidth = document.documentElement.clientWidth; refreshPosition(); }, 200);
   });
   
   window.addEventListener('load', () => {
@@ -860,8 +1267,151 @@
 
 
 /* ============================================================
-   SCROLL REVEAL + CONFETTI — fires when gift section appears
+   SOUND STATE — shared mute flag used by music + confetti pop
    ============================================================ */
+let soundOn = false;
+const soundToggleBtn = document.getElementById('sound-toggle');
+const bgMusic = document.getElementById('bg-music');
+const musicPill = document.getElementById('music-pill');
+const musicBars = document.getElementById('music-bars');
+
+function setSound(on) {
+  soundOn = on;
+  soundToggleBtn.textContent = on ? '🔊' : '🔇';
+  if (on) {
+    bgMusic.muted = false;
+    bgMusic.volume = 0.35;
+    bgMusic.play().catch(() => {});
+    musicBars.classList.remove('paused');
+  } else {
+    bgMusic.muted = true;
+    bgMusic.pause();
+    musicBars.classList.add('paused');
+  }
+}
+
+soundToggleBtn.addEventListener('click', () => setSound(!soundOn));
+musicPill.addEventListener('click', () => setSound(!soundOn));
+
+// try a soft autoplay (muted, per browser policy) so the track is primed
+bgMusic.muted = true;
+bgMusic.play().catch(() => {});
+
+function playPop() {
+  if (!soundOn) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(520, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+    g.gain.setValueAtTime(0.18, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + 0.36);
+  } catch (e) {}
+}
+
+
+/* ============================================================
+   SCROLL PROGRESS BAR + SIDE NAV
+   ============================================================ */
+const progressBar = document.getElementById('progress-bar');
+const sideDots = Array.from(document.querySelectorAll('.side-dot'));
+const sideTargets = sideDots.map(d => document.querySelector(d.dataset.target)).filter(Boolean);
+
+sideDots.forEach((dot, i) => {
+  dot.addEventListener('click', () => {
+    if (sideTargets[i]) sideTargets[i].scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+function updateScrollUI() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = pct + '%';
+
+  let activeIndex = 0;
+  sideTargets.forEach((el, i) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top <= window.innerHeight * 0.5) activeIndex = i;
+  });
+  sideDots.forEach((d, i) => d.classList.toggle('active', i === activeIndex));
+}
+
+window.addEventListener('scroll', updateScrollUI, { passive: true });
+window.addEventListener('load', updateScrollUI);
+
+
+/* ============================================================
+   ENVELOPE — click to open, reveals the letter card
+   ============================================================ */
+(function() {
+  const envelopeWrap = document.getElementById('envelope-wrap');
+  const envelope = document.getElementById('envelope');
+  const letterCard = document.getElementById('letter-card');
+  const closeBtn = document.getElementById('letter-close');
+  if (!envelope || !letterCard) return;
+
+  function openEnvelope() {
+    envelope.classList.add('opened');
+    envelopeWrap.classList.add('is-open');
+    playPop();
+
+    setTimeout(() => {
+      envelopeWrap.classList.add('hidden-env');
+      letterCard.classList.add('shown');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => letterCard.classList.add('unfolded'));
+      });
+    }, 650);
+  }
+
+  function closeEnvelope() {
+    letterCard.classList.remove('unfolded', 'shown');
+    envelopeWrap.classList.remove('hidden-env', 'is-open');
+    envelope.classList.remove('opened');
+  }
+
+  envelope.addEventListener('click', openEnvelope);
+  envelope.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEnvelope(); }
+  });
+  envelope.setAttribute('tabindex', '0');
+  envelope.setAttribute('role', 'button');
+  envelope.setAttribute('aria-label', 'Open the letter');
+
+  if (closeBtn) closeBtn.addEventListener('click', closeEnvelope);
+})();
+
+
+/* ============================================================
+   MEMORIES COUNTER — live ticking days since April 5, 2026
+   ============================================================ */
+(function() {
+  const startDate = new Date(2026, 3, 5); // April 5, 2026
+  const counterEl = document.getElementById('days-counter');
+  if (!counterEl) return;
+
+  let displayed = -1;
+
+  function render() {
+    const now = new Date();
+    const diffMs = now - startDate;
+    const days = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+    if (days !== displayed) {
+      displayed = days;
+      counterEl.textContent = days.toLocaleString();
+    }
+  }
+
+  render();
+  setInterval(render, 1000 * 30); // recheck every 30s, ticks over at midnight
+})();
+
 let confettiHasRun = false;
 
 const revealEl = document.querySelector('.reveal-wrapper');
@@ -872,7 +1422,7 @@ new IntersectionObserver(entries => {
 
       if (!confettiHasRun) {
         confettiHasRun = true;
-        setTimeout(() => launchConfetti(), 400);
+        setTimeout(() => { launchConfetti(); playPop(); }, 400);
       }
     }
   });
