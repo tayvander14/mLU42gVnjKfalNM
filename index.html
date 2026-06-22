@@ -772,71 +772,65 @@
     font-weight: 500;
   }
 
-  /* ── MUSIC PLAYER ─────────────────────────────────────────────*/
-  #music-pill {
+  /* ── MUSIC PANEL ──────────────────────────────────────────────*/
+  #music-toggle {
     position: fixed;
     bottom: 1.6rem;
     left: 1.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     background: var(--cream);
     border: 1px solid var(--gold-light);
-    border-radius: 30px;
-    padding: 0.5rem 1.1rem 0.5rem 0.5rem;
-    z-index: 9500;
-    box-shadow: 0 2px 14px rgba(30,35,24,0.12);
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  #music-pill:hover { background: var(--warm); }
-
-  #music-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--gold);
-    color: var(--cream);
+    color: var(--gold);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
-    flex: 0 0 auto;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 9500;
+    box-shadow: 0 2px 14px rgba(30,35,24,0.12);
+    transition: background 0.2s, color 0.2s;
   }
 
-  #music-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
+  #music-toggle:hover { background: var(--gold); color: var(--cream); }
+
+  #music-panel {
+    position: fixed;
+    bottom: 5.4rem;
+    left: 1.6rem;
+    width: min(90vw, 320px);
+    background: var(--cream);
+    border: 1px solid var(--gold-light);
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgba(30,35,24,0.18);
+    padding: 0.6rem;
+    z-index: 9500;
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  #music-panel.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  #music-panel iframe {
+    display: block;
+    border-radius: 8px;
+  }
+
+  #music-panel-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--soft);
-    white-space: nowrap;
+    text-align: center;
+    margin-bottom: 0.5rem;
   }
-
-  #music-bars {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    height: 12px;
-  }
-
-  #music-bars span {
-    width: 2px;
-    background: var(--gold);
-    border-radius: 1px;
-    animation: barBounce 0.9s ease-in-out infinite;
-  }
-
-  #music-bars span:nth-child(1) { animation-delay: 0s; }
-  #music-bars span:nth-child(2) { animation-delay: 0.2s; }
-  #music-bars span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes barBounce {
-    0%, 100% { height: 4px; }
-    50% { height: 12px; }
-  }
-
-  #music-bars.paused span { animation-play-state: paused; height: 4px; }
 
   /* ── ANIMATIONS ─────────────────────────────────────────────*/
   @keyframes fadeUp {
@@ -875,18 +869,12 @@
   <button class="side-dot" data-target=".closing" aria-label="Closing"></button>
 </nav>
 
-<button id="sound-toggle" aria-label="Toggle sound" style="display:none;">🔊</button>
+<button id="music-toggle" aria-label="Toggle our song">♪</button>
 
-<div id="music-pill" role="button" aria-label="Toggle our song">
-  <div id="music-icon">♪</div>
-  <div id="music-bars" class="paused"><span></span><span></span><span></span></div>
-  <div id="music-label">Our Song</div>
+<div id="music-panel">
+  <p id="music-panel-label">Your Song for Today</p>
+  <div id="music-embed-slot"></div>
 </div>
-
-<!-- Replace the src below with a link to your song's audio file -->
-<audio id="bg-music" loop preload="none">
-  <source src="music/our-song.mp3" type="audio/mpeg">
-</audio>
 
 <!-- ============================================================
      HERO
@@ -1265,37 +1253,46 @@
   });
 })();
 
-
 /* ============================================================
-   SOUND STATE — shared mute flag used by music + confetti pop
+   MUSIC PANEL — Apple Music embed, loaded on first open
    ============================================================ */
-let soundOn = false;
-const soundToggleBtn = document.getElementById('sound-toggle');
-const bgMusic = document.getElementById('bg-music');
-const musicPill = document.getElementById('music-pill');
-const musicBars = document.getElementById('music-bars');
+let soundOn = false; // kept so playPop() calls elsewhere don't break
 
-function setSound(on) {
-  soundOn = on;
-  soundToggleBtn.textContent = on ? '🔊' : '🔇';
-  if (on) {
-    bgMusic.muted = false;
-    bgMusic.volume = 0.35;
-    bgMusic.play().catch(() => {});
-    musicBars.classList.remove('paused');
-  } else {
-    bgMusic.muted = true;
-    bgMusic.pause();
-    musicBars.classList.add('paused');
-  }
+const musicToggle = document.getElementById('music-toggle');
+const musicPanel = document.getElementById('music-panel');
+const musicSlot = document.getElementById('music-embed-slot');
+
+const APPLE_MUSIC_EMBED_SRC = "https://embed.music.apple.com/us/album/you-are-so-beautiful-apple-music-sessions/1709217434?i=1709217725";
+
+let embedLoaded = false;
+
+function loadEmbed() {
+  if (embedLoaded) return;
+  embedLoaded = true;
+  const iframe = document.createElement('iframe');
+  iframe.allow = "autoplay *; encrypted-media *;";
+  iframe.frameBorder = "0";
+  iframe.height = "150";
+  iframe.style.width = "100%";
+  iframe.style.maxWidth = "660px";
+  iframe.style.overflow = "hidden";
+  iframe.style.background = "transparent";
+  iframe.sandbox = "allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation";
+  iframe.src = APPLE_MUSIC_EMBED_SRC;
+  musicSlot.appendChild(iframe);
 }
 
-soundToggleBtn.addEventListener('click', () => setSound(!soundOn));
-musicPill.addEventListener('click', () => setSound(!soundOn));
+musicToggle.addEventListener('click', () => {
+  const isOpen = musicPanel.classList.toggle('open');
+  if (isOpen) loadEmbed();
+});
 
-// try a soft autoplay (muted, per browser policy) so the track is primed
-bgMusic.muted = true;
-bgMusic.play().catch(() => {});
+document.addEventListener('click', (e) => {
+  if (!musicPanel.classList.contains('open')) return;
+  if (!musicPanel.contains(e.target) && e.target !== musicToggle) {
+    musicPanel.classList.remove('open');
+  }
+});
 
 function playPop() {
   if (!soundOn) return;
@@ -1313,7 +1310,6 @@ function playPop() {
     o.stop(ctx.currentTime + 0.36);
   } catch (e) {}
 }
-
 
 /* ============================================================
    SCROLL PROGRESS BAR + SIDE NAV
