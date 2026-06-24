@@ -462,6 +462,99 @@
     transform: translateY(0);
   }
 
+  /* ── GIFT OPTIONS GRID ───────────────────────────────────────*/
+  .gift-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+    margin-top: 3rem;
+    text-align: left;
+  }
+
+  @media (max-width: 640px) {
+    .gift-grid { grid-template-columns: 1fr; }
+  }
+
+  .gift-card {
+    background: var(--deep);
+    border-radius: 10px;
+    padding: 2.2rem 1.8rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(122,143,82,0.25);
+    transition: transform 0.35s ease, border-color 0.35s ease;
+  }
+
+  .gift-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(90,107,58,0.14) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+  }
+
+  .gift-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold-light);
+  }
+
+  .gift-card-icon {
+    font-size: 1.9rem;
+    margin-bottom: 0.9rem;
+    display: inline-block;
+    position: relative;
+  }
+
+  .gift-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--gold-light);
+    margin-bottom: 0.9rem;
+    line-height: 1.25;
+    position: relative;
+  }
+
+  .gift-card-list {
+    list-style: none;
+    position: relative;
+  }
+
+  .gift-card-list li {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #b8c8a0;
+    padding-left: 1.1rem;
+    position: relative;
+    margin-bottom: 0.35rem;
+  }
+
+  .gift-card-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold-light);
+  }
+
+  .gift-card-note {
+    margin-top: 0.9rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--soft);
+    font-style: italic;
+    position: relative;
+  }
+
+  .gift-footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--gold);
+  }
+
   /* ── CLOSING ────────────────────────────────────────────────*/
   .closing {
     text-align: center;
@@ -1045,34 +1138,79 @@
 
 
 <!-- ============================================================
-     GIFT REVEAL
+     GIFT REVEAL — PICK YOUR GIFT
      ============================================================ -->
 <section class="reveal-section reveal-wrapper" style="margin:0 auto;">
   <p class="section-label">A little surprise</p>
   <h2 class="section-title">And now, the <em>fun</em> part.</h2>
 
-  <p class="section-body" style="color:var(--mid);">
+  <p class="section-body" style="color:var(--mid); margin: 0 auto;">
     So I thought a lot about what to get you for 24. It's your golden birthday, which only happens once, and I wanted to make it a little special.<br><br>
-    You always say yes to adventure, so I figured your birthday should include a little of it too.<br><br>
+    Since I couldn't decide on just one thing, I thought I'd let the birthday boy choose. Whatever you choose, it's yours.
   </p>
 
-  <div class="reveal-card">
+  <div class="gift-grid">
 
-    <span class="reveal-icon">🪂</span>
+    <div class="gift-card">
+      <h3 class="gift-card-title">Cook Together Date</h3>
+      <ul class="gift-card-list">
+        <li>You choose the recipe</li>
+        <li>I'll handle the ingredients</li>
+        <li>We cook together over FaceTime</li>
+      </ul>
+      <p class="gift-card-note">Let's see who's actually the better cook.</p>
+    </div>
 
-    <p class="reveal-tagline">Your Birthday Gift</p>
+    <div class="gift-card">
+      <h3 class="gift-card-title">Lego Date</h3>
+      <ul class="gift-card-list">
+        <li>You pick the set</li>
+        <li>I'll buy us each one</li>
+        <li>We build it together over FaceTime</li>
+      </ul>
+        <p class="gift-card-note">You've been doing a lot of building lately, but engineering's lowkey in my blood.</p>
+    </div>
 
-    <h3 class="reveal-card-title">You're Going<br><em>Skydiving.</em></h3>
+    <div class="gift-card">
+      <h3 class="gift-card-title">Jersey of Your Choice</h3>
+      <ul class="gift-card-list">
+        <li>Ghana</li>
+        <li>Real Madrid</li>
+        <li>Or another favorite</li>
+      </ul>
+        <p class="gift-card-note">Time to rep your team.</p>
+    </div>
 
-    <p class="reveal-body">
-      I wanted to give you something I know you've been wanting to do for a while, but were waiting until you got to California to finally cross off your bucket list.<br><br>
+    <div class="gift-card">
+      <h3 class="gift-card-title">Video Game of Your Choice</h3>
+      <ul class="gift-card-list">
+        <li>You choose</li>
+        <li>I'll gift it</li>
+      </ul>
+        <p class="gift-card-note">Not trying to revive the gaming addiction... but here we are.</p>
+    </div>
 
-      I haven't booked anything yet because I want you to pick the drop zone (I have a few options in mind). Whether you go with friends, by yourself, or with me when I come visit 😉, that's entirely up to you.<br><br>
+    <div class="gift-card">
+      <h3 class="gift-card-title">Something for Your New Place</h3>
+      <ul class="gift-card-list">
+        <li>Pick something you've been wanting for your apartment</li>
+        <li>I'll make it happen</li>
+      </ul>
+        <p class="gift-card-note">Go practical or splurge... your call.</p>
+    </div>
 
-      Consider this the official announcement. The details (and the actual jump) are coming soon.
-    </p>
+    <div class="gift-card">
+      <h3 class="gift-card-title">A Yes Day</h3>
+      <ul class="gift-card-list">
+        <li>I say yes all day, regardless of the request (within reason)</li>
+        <li>Redeemable virtually or in person</li>
+      </ul>
+        <p class="gift-card-note">I like to think I already say yes to you, but this might be the true test...</p>
+    </div>
 
   </div>
+
+  <p class="gift-footer">There are no wrong answers here.</p>
 </section>
 
 
@@ -1081,7 +1219,7 @@
      ============================================================ -->
 <div class="closing">
   <!-- Edit the closing lines below -->
-<h2 class="closing-title">Until the next adventure,<br>my love.</h2>
+<h2 class="closing-title">Until I can celebrate you in person,<br>my love.</h2>
   <p class="closing-sub">Happy 24th Birthday</p>
   <div class="hearts">♡ &nbsp; ♡ &nbsp; ♡</div>
 </div>
@@ -1120,8 +1258,6 @@
     gap = 16;
     step = slideWidth + gap;
 
-    // use documentElement.clientWidth (stable) rather than window.innerWidth,
-    // which on iOS Safari changes as the address bar shows/hides while scrolling
     const viewportWidth = document.documentElement.clientWidth;
     const sidePad = Math.max(0, (viewportWidth - slideWidth) / 2);
     track.style.paddingLeft  = sidePad + 'px';
@@ -1235,7 +1371,7 @@
 
   function handleResize() {
     const w = document.documentElement.clientWidth;
-    if (w === lastWidth) return; // ignore height-only changes (iOS address bar)
+    if (w === lastWidth) return;
     lastWidth = w;
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(refreshPosition, 120);
@@ -1258,7 +1394,7 @@
 /* ============================================================
    MUSIC PANEL — Apple Music embed, loaded on first open
    ============================================================ */
-let soundOn = false; // kept so playPop() calls elsewhere don't break
+let soundOn = false;
 
 const musicToggle = document.getElementById('music-toggle');
 const musicPanel = document.getElementById('music-panel');
@@ -1390,7 +1526,7 @@ window.addEventListener('load', updateScrollUI);
    MEMORIES COUNTER — live ticking days since April 5, 2026
    ============================================================ */
 (function() {
-  const startDate = new Date(2026, 3, 5); // April 5, 2026
+  const startDate = new Date(2026, 3, 5);
   const counterEl = document.getElementById('days-counter');
   if (!counterEl) return;
 
@@ -1407,7 +1543,7 @@ window.addEventListener('load', updateScrollUI);
   }
 
   render();
-  setInterval(render, 1000 * 30); // recheck every 30s, ticks over at midnight
+  setInterval(render, 1000 * 30);
 })();
 
 let confettiHasRun = false;
